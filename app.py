@@ -238,3 +238,7 @@ if df is not None:
             st.dataframe(score_df)
     else:
         st.info("Engagement prediction pipeline not found. Upload 'engagement_pipe.joblib' to enable model-driven scores.")
+
+st.write("Files:", os.listdir("."))
+pipe = load_pipeline()
+st.write("Pipeline loaded:", type(pipe))
