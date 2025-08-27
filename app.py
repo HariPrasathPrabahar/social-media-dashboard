@@ -240,8 +240,4 @@ if df is not None:
     else:
         st.info("Engagement prediction pipeline not found. Upload 'engagement_pipe.joblib' to enable model-driven scores.")
 
-if pipe is not None:
-    st.success("✅ Engagement prediction pipeline loaded successfully.")
-else:
-    st.warning("⚠️ No engagement prediction pipeline loaded.")
 
