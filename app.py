@@ -82,7 +82,7 @@ def recommend_influencers(df, topic=None, k=10, min_mentions=3):
 
 def generate_templates_from_top(df, top_n=50, out_n=10):
         top_df = df.sort_values('engagement', ascending=False).head(top_n)
-    templates = []
+        templates = []
     for txt in top_df['content'].dropna().unique():
         s = re.sub(r'http\S+','', txt)
         s = re.sub(r'@\w+', '{mention}', s)
