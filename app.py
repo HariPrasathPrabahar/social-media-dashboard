@@ -1,4 +1,3 @@
-# app.py
 import os
 import streamlit as st
 import pandas as pd
@@ -81,8 +80,8 @@ def recommend_influencers(df, topic=None, k=10, min_mentions=3):
     return stats
 
 def generate_templates_from_top(df, top_n=50, out_n=10):
-        top_df = df.sort_values('engagement', ascending=False).head(top_n)
-        templates = []
+    top_df = df.sort_values('engagement', ascending=False).head(top_n)
+    templates = []
     for txt in top_df['content'].dropna().unique():
         s = re.sub(r'http\S+','', txt)
         s = re.sub(r'@\w+', '{mention}', s)
@@ -124,7 +123,6 @@ if df is not None:
         df['hour'] = df['date_time'].dt.hour.fillna(-1).astype(int)
     normalize_hashtags_col(df)
 
-    
     st.sidebar.header("Filters")
     authors = ["(All)"] + sorted(df['author'].dropna().unique().tolist())
     topics = ["(All)"] + sorted(df['topic'].dropna().unique().tolist())
@@ -144,7 +142,6 @@ if df is not None:
         view = view[view['emotion'] == sel_emotion]
     view = view[view['number_of_likes'] >= min_likes]
 
-    
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Tweets in view", f"{len(view):,}")
     col2.metric("Avg engagement", f"{int(view['engagement'].mean() if len(view) else 0):,}")
@@ -152,7 +149,6 @@ if df is not None:
     col3.metric("Top posting hour (avg eng)", top_hour)
     col4.metric("Top emotion", view['emotion'].mode().iloc[0] if len(view) else "-")
 
-   
     st.subheader("Engagement over time")
     view['date'] = pd.to_datetime(view['date_time']).dt.date
     daily = view.groupby('date')['engagement'].sum().reset_index()
@@ -162,28 +158,23 @@ if df is not None:
     else:
         st.write("No date/time data to plot.")
 
-    
     st.subheader("Top Hashtags (by avg engagement)")
     ht_stats = recommend_hashtags(view, topic=(None if sel_topic=="(All)" else sel_topic), emotion=(None if sel_emotion=="(All)" else sel_emotion), k=30)
     st.dataframe(ht_stats)
 
-  
     st.subheader("Top Influencers (PERSON) by avg engagement")
     infl = recommend_influencers(view, topic=(None if sel_topic=="(All)" else sel_topic), k=30)
     st.dataframe(infl)
 
-    
     st.subheader("Best Posting Hours (by avg engagement)")
     hours_df = recommend_hours(view, topic=(None if sel_topic=="(All)" else sel_topic), k=12)
     st.dataframe(hours_df)
 
-    
     st.subheader("High-performing caption templates (from top tweets)")
     templates = generate_templates_from_top(view, top_n=200, out_n=25)
     for t in templates:
         st.write("- " + t)
 
-    
     st.header("Recommendations (data-driven)")
     rec_topic = None if sel_topic=="(All)" else sel_topic
     recommended_hashtags = recommend_hashtags(df, topic=rec_topic, k=10)
@@ -201,14 +192,12 @@ if df is not None:
         st.subheader("Influencers")
         st.dataframe(recommended_influencers)
 
-    
     if not recommended_hashtags.empty:
         csv_bytes = to_csv_bytes(recommended_hashtags)
         st.download_button("Download hashtag recommendations (CSV)", csv_bytes, file_name="hashtag_recommendations.csv")
     else:
         st.write("No hashtag recommendations available.")
 
-    
     if pipe is not None:
         st.subheader("Estimate expected engagement for candidate hashtags (model-based)")
         candidate_input = st.text_input("Enter candidate hashtags separated by commas (e.g. #news,#sports):", "")
@@ -234,5 +223,3 @@ if df is not None:
             st.dataframe(score_df)
     else:
         st.info("Engagement prediction pipeline not found. Upload 'engagement_pipe.joblib' to enable model-driven scores.")
-
-
